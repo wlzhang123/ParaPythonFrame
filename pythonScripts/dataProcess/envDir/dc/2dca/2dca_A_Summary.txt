@@ -1,0 +1,9 @@
+id      CavityScore    pKd(Max)       pKd(Ave)       Vaccant(A^3)   Surface(A^2)   DrugScore      Druggability   
+1       4.22           10.30          6.15           475.12         319.00         -801.00        Undruggable    
+2       2.93           7.98           5.35           242.88         193.75         -774.00        Undruggable    
+3       2.74           7.65           5.24           169.50         216.00         -493.00        Undruggable    
+4       2.74           7.64           5.24           287.00         242.00         -868.00        Undruggable    
+5       1.84           6.03           4.69           257.62         250.00         -1135.00       Undruggable    
+6       1.83           6.00           4.68           170.50         144.75         -1414.00       Undruggable    
+7       1.81           5.97           4.67           126.00         131.00         -1576.00       Undruggable    
+8       1.51           5.43           4.48           96.25          128.50         -1433.00       Undruggable    

@@ -1,0 +1,6 @@
+INCLUDE				./default/cavitydefault.input
+DETECT_MODE			0
+RECEPTOR_FILE		 	./resultCavity/hh/3hhi/3hhi_A.pdb
+LIGBUILDER			0
+VISUAL_OUTPUT			0
+INCLUDE				./default/standard.input

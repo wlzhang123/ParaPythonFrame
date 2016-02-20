@@ -1,0 +1,37 @@
+
+==================================================
+Summary of pdb4amber for file 4aaj_A.pdb
+==================================================
+
+----------Chains
+The following (original) chains have been found:
+A
+
+---------- Alternate Locations (Original Residues!)
+The following residues had alternate locations:
+HIS_99
+The alternate coordinates have been discarded.
+Only the first occurrence for each atom was kept.
+
+---------- Histidines (Renumbered Residues!)
+It was not possible to determine the protonation state of the following HIS
+residues based on presence of hydrogens. Amber will consider them as HIE
+(epsilon-HIS) by default. If other protonation state desired change to HID
+(delta-HIS) or HIP (protonated HIS) by hand.
+HIS_80
+HIS_1
+HIS_136
+HIS_21
+
+---------- Cysteines in Disulfide Bonds (Renumbered Residues!)
+No disulfide bonds have been detected.
+
+---------- Gaps (Renumbered Residues!)
+gap of 6.743632 A between THR_135 and HIS_136
+You MUST (!!!) insert a TER record between the residues listed above and
+consider to introduce caps (ACE and NME) at the dangling N- and C-terminals.
+
+---------- Missing Heavy Atoms (Renumbered Residues!)
+LYS_110 misses 5 heavy atom(s)
+HIS_136 misses 6 heavy atom(s)
+

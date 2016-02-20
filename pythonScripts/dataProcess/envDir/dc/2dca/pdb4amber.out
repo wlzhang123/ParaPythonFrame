@@ -1,0 +1,37 @@
+
+==================================================
+Summary of pdb4amber for file 2dca_A.pdb
+==================================================
+
+----------Chains
+The following (original) chains have been found:
+A
+
+---------- Histidines (Renumbered Residues!)
+It was not possible to determine the protonation state of the following HIS
+residues based on presence of hydrogens. Amber will consider them as HIE
+(epsilon-HIS) by default. If other protonation state desired change to HID
+(delta-HIS) or HIP (protonated HIS) by hand.
+HIS_45
+HIS_197
+HIS_108
+HIS_109
+HIS_143
+HIS_237
+HIS_188
+HIS_95
+
+---------- Cysteines in Disulfide Bonds (Renumbered Residues!)
+CYS_14 - CYS_43: S-S distance = 2.030838 Ang.
+CYS_26 - CYS_69: S-S distance = 2.034177 Ang.
+CYS_60 - CYS_126: S-S distance = 2.036551 Ang.
+CYS_61 - CYS_65: S-S distance = 2.025170 Ang.
+CYS_98 - CYS_130: S-S distance = 2.032524 Ang.
+CYS_106 - CYS_117: S-S distance = 2.029362 Ang.
+CYS_146 - CYS_250: S-S distance = 2.034708 Ang.
+The above CYS have been renamed to CYX in the new PDB file.
+Disulfide bond CONECT cards have been added to the new PDB file.
+
+---------- Missing Heavy Atoms (Renumbered Residues!)
+None
+

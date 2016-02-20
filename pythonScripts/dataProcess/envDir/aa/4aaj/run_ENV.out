@@ -1,0 +1,6 @@
+@> 1554 atoms and 1 coordinate set(s) were parsed in 0.01s.
+@> 1554 atoms and 1 coordinate set(s) were parsed in 0.01s.
+/lustre1/lhlai_pkuhpc/wlzhang/run_test/SHAFT/venv/lib/python2.7/site-packages/prody/atomic/hierview.py:413: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  len(self._residues) - self._residues.count(None))
+pops --pdb protein.pdb --residueOut --noHeaderOut --noTotalOut 
+resname CYS

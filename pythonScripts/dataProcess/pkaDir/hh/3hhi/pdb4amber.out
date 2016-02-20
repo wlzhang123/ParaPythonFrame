@@ -1,0 +1,44 @@
+
+==================================================
+Summary of pdb4amber for file 3hhi_A.pdb
+==================================================
+
+----------Chains
+The following (original) chains have been found:
+A
+
+---------- Alternate Locations (Original Residues!)
+The following residues had alternate locations:
+GLU_80
+ARG_147
+SER_153
+HIS_250
+The alternate coordinates have been discarded.
+Only the first occurrence for each atom was kept.
+
+---------- Histidines (Renumbered Residues!)
+It was not possible to determine the protonation state of the following HIS
+residues based on presence of hydrogens. Amber will consider them as HIE
+(epsilon-HIS) by default. If other protonation state desired change to HID
+(delta-HIS) or HIP (protonated HIS) by hand.
+HIS_195
+HIS_196
+HIS_205
+HIS_114
+HIS_117
+HIS_118
+HIS_68
+
+---------- Cysteines in Disulfide Bonds (Renumbered Residues!)
+CYS_30 - CYS_59: S-S distance = 2.049919 Ang.
+CYS_42 - CYS_85: S-S distance = 2.085426 Ang.
+CYS_77 - CYS_138: S-S distance = 2.043877 Ang.
+CYS_78 - CYS_81: S-S distance = 2.059739 Ang.
+CYS_107 - CYS_142: S-S distance = 2.111243 Ang.
+CYS_115 - CYS_128: S-S distance = 2.030053 Ang.
+The above CYS have been renamed to CYX in the new PDB file.
+Disulfide bond CONECT cards have been added to the new PDB file.
+
+---------- Missing Heavy Atoms (Renumbered Residues!)
+None
+
