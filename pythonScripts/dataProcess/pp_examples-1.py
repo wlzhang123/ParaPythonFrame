@@ -53,6 +53,8 @@ print "Starting pp with", job_server.get_ncpus(), "workers"
 # (isprime,) - tuple with functions on which function sum_primes depends
 # ("math",) - tuple with module names which must be imported before sum_primes execution
 # Execution starts as soon as one of the workers will become available
+
+job1 = job_server.submit(sum_primes, (100,), (isprime,), ("math",))
 job1 = job_server.submit(sum_primes, (100,), (isprime,), ("math",))
 
 # Retrieves the result calculated by job1
@@ -67,6 +69,15 @@ start_time = time.time()
 # The following submits 8 jobs and then retrieves the results
 inputs = (100000, 100100, 100200, 100300, 100400, 100500, 100600, 100700)
 jobs = [(input, job_server.submit(sum_primes,(input,), (isprime,), ("math",))) for input in inputs]
+
+jobs = [
+    (
+        input, 
+        job_server.submit(sum_primes,(input,), (isprime,), ("math",))
+    ) 
+    
+    for input in inputs]
+
 for input, job in jobs:
     print "Sum of primes below", input, "is", job()
 
