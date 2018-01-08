@@ -26,14 +26,18 @@ def init_options():
 	                                            default='nodelist.out')
 	return parser
 
+
+options = init_options().parse_args()
+
 with open(options.nodelist,'r') as fh:
     ppservers = tuple(fh.readline().strip().split(' '))
 print(ppservers)
 
+depfuncs=()
+modules=()
 job_server = pp.Server(ppservers=ppservers,socket_timeout=36000)
 print("Startng pp with %d workers"%job_server.get_ncpus())
 
-options = init_options().parse_args()
 
 use_existing_ligand_charges = 1
 ignore_amberize_errors = 0
@@ -214,7 +218,7 @@ print("completed Stage 4.\n")
 
 ##### Stage 5 make each subdir for with batch size and fixed amber_score file ########################
 
-def mkdir_p(self,path):
+def mkdir_p(path):
 	try:
 		os.makedirs(path)
 	except OSError as exc: # Python >2.5 (except OSError, exc: for Python <2.5)
