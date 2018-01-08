@@ -33,8 +33,7 @@ with open(options.nodelist,'r') as fh:
     ppservers = tuple(fh.readline().strip().split(' '))
 print(ppservers)
 
-depfuncs=()
-modules=()
+
 job_server = pp.Server(ppservers=ppservers,socket_timeout=36000)
 print("Startng pp with %d workers"%job_server.get_ncpus())
 
@@ -139,7 +138,72 @@ for index in range(1,global_count+1):
 	if not os.path.isfile('%s.%d.mol2'%(prefix,index)):
 		print '%s.%d.mol2 is not ready in stage 3'%(prefix,index)
 
-#
+
+##### Stage 5 make each subdir for with batch size and fixed amber_score file ########################
+
+def mkdir_p(path):
+	try:
+		os.makedirs(path)
+	except OSError as exc: # Python >2.5 (except OSError, exc: for Python <2.5)
+		if exc.errno == errno.EEXIST and os.path.isdir(path):
+			pass
+		else: raise
+
+def subDirProcess(prefix,rec_file_prefix,lignum,mCount,subDir,fh):
+	suffixList = ['amber.pdb','inpcrd','prmtop']
+	suffixList2 = ['mol2']
+	try:
+		#for prot:
+		for suffix in suffixList:
+			fileName = "%s.%s"%(rec_file_prefix,suffix)
+			# shutil.move(fileName,'./%s/%s'%(subDir,fileName))
+			shutil.copy(fileName,'./%s/%s'%(subDir,fileName))
+		for suffix in (suffixList+suffixList2):
+			fileName = "%s.%d.%s"%(prefix,lignum,suffix)
+			newName = "%s.%d.%s"%(prefix,mCount,suffix)
+			# shutil.move(fileName,'./%s/%s'%(subDir,newName))
+			shutil.copy(fileName,'./%s/%s'%(subDir,newName))
+	except Exception,e:
+		print Exception
+		print e
+
+	with open("%s/%s.%d.mol2"%(subDir,prefix,mCount),'r') as tfh:
+		sAllLines = tfh.readlines()
+	
+	for line in sAllLines:
+		fh.write(line)
+
+	fh.write("@<TRIPOS>AMBER_SCORE_ID\n")
+	fh.write("%s.%d\n\n\n"%(prefix,mCount))
+	
+batchSize = 1000
+subDirIndex = 0
+mCount = 0
+
+depfuncs=()
+modules=()
+
+subDir = "amber-%d"%(subDirIndex)
+mkdir_p(subDir)
+fh=open('%s/%s.amber_score.mol2.fix'%(subDir,prefix),'w')
+
+for lignum in range(1,global_count+1):
+	mCount = mCount + 1
+	subDir = "amber-%d"%(subDirIndex)
+
+	job_server.submit(subDirProcess,(prefix,rec_file_prefix,lignum,mCount,subDir,fh),depfuncs,modules)
+
+	if mCount%batchSize==0:
+		subDirIndex = subDirIndex + 1
+		subDir = "amber-%d"%(subDirIndex)
+		mkdir_p(subDir)
+		mcount = 0
+		fh.close()
+		fh=open('%s/%s.amber_score.mol2.fix'%(subDir,prefix),'w')
+
+fh.close()
+
+
 ################################################################################
 #### SECTION:4: generate files for ligand and complex; call amberize scripts ###
 ################################################################################
@@ -207,81 +271,18 @@ def prepareTopFiles(prefix,lignum,chargeOption):
 
 			exit(-1)
 	subprocess.Popen("/lustre1/lhlai_pkuhpc/wlzhang/usr/local/tools/amberize_complex %s %s.%d 1> amberize_complex.%s.%d.out  2>&1"%(rec_file_prefix,prefix,lignum,prefix,lignum),shell=True).wait()
-
-
-for lignum in range(1,global_count+1):
-
-	print "%s.%d.mol2"%(prefix,lignum)
-	job_server.submit(prepareTopFiles,(prefix,lignum,use_existing_ligand_charges),depfuncs,modules)
+depfuncs=('round')
+modules=()
+for index in range(0,subDirIndex+1):
+    subDir = "amber-%d"%(index)
+    topDir = os.getcwd()
+    os.chdir(subDir)
+	for lignum in range(1,batchSize+1): 
+	    job_server.submit(prepareTopFiles,(prefix,lignum,use_existing_ligand_charges),depfuncs,modules)
+    os.chdir(topDir)
 
 print("completed Stage 4.\n")
 
-##### Stage 5 make each subdir for with batch size and fixed amber_score file ########################
 
-def mkdir_p(path):
-	try:
-		os.makedirs(path)
-	except OSError as exc: # Python >2.5 (except OSError, exc: for Python <2.5)
-		if exc.errno == errno.EEXIST and os.path.isdir(path):
-			pass
-		else: raise
-
-def subDirProcess(prefix,rec_file_prefix,lignum,mCount,subDir,fh):
-	suffixList = ['amber.pdb','inpcrd','prmtop']
-	suffixList2 = ['gaff.mol2','frcmod','mol2']
-	try:
-		#for prot:
-		for suffix in suffixList:
-			fileName = "%s.%s"%(rec_file_prefix,suffix)
-			# shutil.move(fileName,'./%s/%s'%(subDir,fileName))
-			shutil.copy(fileName,'./%s/%s'%(subDir,fileName))
-		for suffix in suffixList:
-			fileName = "%s.%s.%d.%s"%(rec_file_prefix,prefix,lignum,suffix)
-			newName = "%s.%s.%d.%s"%(rec_file_prefix,prefix,mCount,suffix)
-			# shutil.move(fileName,'./%s/%s'%(subDir,newName))
-			shutil.copy(fileName,'./%s/%s'%(subDir,newName))
-		for suffix in (suffixList+suffixList2):
-			fileName = "%s.%d.%s"%(prefix,lignum,suffix)
-			newName = "%s.%d.%s"%(prefix,mCount,suffix)
-			# shutil.move(fileName,'./%s/%s'%(subDir,newName))
-			shutil.copy(fileName,'./%s/%s'%(subDir,newName))
-	except Exception,e:
-		print Exception
-		print e
-
-	with open("%s/%s.%d.mol2"%(subDir,prefix,mCount),'r') as tfh:
-		sAllLines = tfh.readlines()
-	
-	for line in sAllLines:
-		fh.write(line)
-
-	fh.write("@<TRIPOS>AMBER_SCORE_ID\n")
-	fh.write("%s.%d\n\n\n"%(prefix,mCount))
-	
-
-
-batchSize = 1000
-subDirIndex = 0
-mCount = 0
-
-subDir = "amber-%d"%(subDirIndex)
-mkdir_p(subDir)
-fh=open('%s/%s.amber_score.mol2.fix'%(subDir,prefix),'w')
-
-for lignum in range(1,global_count+1):
-	mCount = mCount + 1
-	subDir = "amber-%d"%(subDirIndex)
-
-	job_server.submit(subDirProcess,(prefix,rec_file_prefix,lignum,mCount,subDir,fh),depfuncs,modules)
-
-	if mCount%batchSize==0:
-		subDirIndex = subDirIndex + 1
-		subDir = "amber-%d"%(subDirIndex)
-		mkdir_p(subDir)
-		mcount = 0
-		fh.close()
-		fh=open('%s/%s.amber_score.mol2.fix'%(subDir,prefix),'w')
-
-fh.close()
 
 print("completed.\n")
