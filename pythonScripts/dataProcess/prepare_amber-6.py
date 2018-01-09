@@ -186,7 +186,7 @@ for job in resultList:
 	logger.info(job())
 print "stop for moving"
 
-exit(-1)
+
 ################################################################################
 #### SECTION:4: generate files for ligand and complex; call amberize scripts ###
 ################################################################################
@@ -217,12 +217,6 @@ def prepareTopFiles(prefix,lignum,chargeOption):
 		sAllLines=fh.readlines()
 	
 	for line in sAllLines:
-		# if re.search('@<TRIPOS>MOLECULE',line):
-		#	 forName=True
-		# if forName:
-		#	 mol_name=line.strip()
-		#	 mol_name=re.sub('\s+$','',mol_name)
-		#	 forName=False
 		tempList =line.strip().split()
 		#print len(tempList)
 		if len(tempList)==9 and not re.search('ROOT',line):
@@ -255,19 +249,72 @@ def prepareTopFiles(prefix,lignum,chargeOption):
 			exit(-1)
 	subprocess.Popen("/lustre1/lhlai_pkuhpc/wlzhang/usr/local/tools/amberize_complex %s %s.%d 1> amberize_complex.%s.%d.out  2>&1"%(rec_file_prefix,prefix,lignum,prefix,lignum),shell=True).wait()
 
-#depfuncs=('round',)
+#######################
+#### Dependency #######
+#######################
+#depfuncs=(round,)
+# modules=()
+
+#######################
+##  work frame ########
+# resultList=[]
+#for index in range(0,totalIndex):
+#	job = job_server.submit(function,(argument),depfuncs,modules=()
+#	resultList.append(job)
+#for job in resultList:
+#	logger.info(job())
+#	print job()
+#	logger.info(job())
+#job_server.print_stats()
+########################
+
 depfuncs=(round,)
-modules=()
-for index in range(0,subDirIndex+1):
-	subDir = "amber-%d"%(index)
+modules=('subprocess','shutil',)
+resultList=[]
+for subDirIndex in range(0,totalIndex):
+	#mCount = mCount + 1
+	subDir = "amber-%d"%(subDirIndex)
+
 	topDir = os.getcwd()
 	os.chdir(subDir)
 	for lignum in range(1,batchSize+1): 
-		job_server.submit(prepareTopFiles,(prefix,lignum,use_existing_ligand_charges),depfuncs,modules)
+		job = job_server.submit(prepareTopFiles,(prefix,lignum,use_existing_ligand_charges),depfuncs,modules)
 	os.chdir(topDir)
+	resultList.append(job)
 
-print("completed Stage 4.\n")
+######  logging Later ######
+for job in resultList:
+	#logger.info(job())
+	print job()
+	logger.info(job())
+print "stop for moving"
 
 
+################################################################################
+#### SECTION:5: generate .amber_score.mol2 for processed data                ###
+################################################################################
+#
+def catMol2(prefix,subDir,batchSize)
+	fh=open('%s/%s.amber_score.mol2'%(subDir,prefix),'w')
+	for index in range(1,batchSize+1):
+		with open("%s/%s.%d.mol2"%(subDir,prefix,index),'r') as tfh:
+			sAllLines = tfh.readlines()
+
+		for line in sAllLines:
+			fh.write(line)
+
+		fh.write("@<TRIPOS>AMBER_SCORE_ID\n")
+		fh.write("%s.%d\n\n\n"%(prefix,index))
+
+depfuncs=(round,)
+modules=('subprocess','shutil',)
+
+resultList=[]
+for subDirIndex in range(0,totalIndex):
+	#mCount = mCount + 1
+	subDir = "amber-%d"%(subDirIndex)
+	
+	job = job_server.submit(catMol2,(prefix,subDir,batchSize),depfuncs,modules)
+	resultList.append(job)
 
 print("completed.\n")
