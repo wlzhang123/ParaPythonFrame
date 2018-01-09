@@ -37,7 +37,7 @@ with open(options.nodelist,'r') as fh:
 	ppservers = tuple(fh.readline().strip().split(' '))
 print(ppservers)
 
-#logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig(level = logging.DEBUG)
 logger = logging.getLogger("__name__")
 logger = logging.getLogger("ppp-5")
 handler = logging.FileHandler("log-pp.log")
@@ -129,7 +129,7 @@ def mkdir_p(path):
 		else: raise
 # Auxillary Function 
 def subDirMoving(prefix,rec_file_prefix,start,stop,subDir):
-
+	logger = logging.getLogger("__name__")
 	suffixList = ['amber.pdb','inpcrd','prmtop']
 	suffixList2 = ['mol2']
 	
@@ -159,7 +159,7 @@ batchSize = 1000
 
 #### Assign dependency before submit ##### 
 depfuncs=()
-modules=('shutil',)
+modules=('shutil','logging',)
 ##########################################
 
 totalIndex = global_count/batchSize+1
@@ -180,8 +180,10 @@ for subDirIndex in range(0,totalIndex):
 	resultList.append(job)
 
 ######  logging Later ######
-#for job in resultList:
-#	logger.info(job())
+for job in resultList:
+	#logger.info(job())
+	print job()
+	logger.info(job())
 print "stop for moving"
 
 exit(-1)
