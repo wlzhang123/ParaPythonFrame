@@ -7,7 +7,7 @@
 
 import math, sys, time
 import pp
-
+import logging
 def isprime(n):
     """Returns True if n is prime and False otherwise"""
     if not isinstance(n, int):
@@ -24,9 +24,14 @@ def isprime(n):
         i += 1
     return True
 
+
+
+
 def sum_primes(n):
     """Calculates sum of all primes below given integer n"""
     return sum([x for x in xrange(2,n) if isprime(x)])
+def sum_primes2(n):
+    print "hello world"
 
 print """Usage: python sum_primes.py [ncpus]
     [ncpus] - the number of workers to run in parallel, 
@@ -37,15 +42,15 @@ print """Usage: python sum_primes.py [ncpus]
 ppservers = ()
 #ppservers = ("10.0.0.1",)
 
-if len(sys.argv) > 1:
-    ncpus = int(sys.argv[1])
-    # Creates jobserver with ncpus workers
-    job_server = pp.Server(ncpus, ppservers=ppservers)
-else:
-    # Creates jobserver with automatically detected number of workers
-    job_server = pp.Server(ppservers=ppservers)
-
-
+# if len(sys.argv) > 1:
+#     ncpus = int(sys.argv[1])
+#     # Creates jobserver with ncpus workers
+#     job_server = pp.Server(ncpus, ppservers=ppservers)
+# else:
+#     # Creates jobserver with automatically detected number of workers
+#     job_server = pp.Server(ppservers=ppservers)
+ncpus = 2
+job_server = pp.Server(ncpus, ppservers=ppservers)
 print "Starting pp with", job_server.get_ncpus(), "workers"
 
 # Submit a job of calulating sum_primes(100) for execution. 
@@ -54,9 +59,19 @@ print "Starting pp with", job_server.get_ncpus(), "workers"
 # (isprime,) - tuple with functions on which function sum_primes depends
 # ("math",) - tuple with module names which must be imported before sum_primes execution
 # Execution starts as soon as one of the workers will become available
+logging.basicConfig(level=logging.DEBUG)
+job0 = job_server.submit(sum_primes2, (10,), (isprime,), ("math",))
+jobee0 = job_server.submit(sum_primes, (10,), (), ()) 
+
+print "It is job0"
+print job0()
+
+print "check error information"
+
+#exit(-1)
 
 job1 = job_server.submit(sum_primes, (100,), (isprime,), ("math",))
-job1 = job_server.submit(sum_primes, (100,), (isprime,), ("math",))
+
 
 # Retrieves the result calculated by job1
 # The value of job1() is the same as sum_primes(100)
@@ -64,7 +79,10 @@ job1 = job_server.submit(sum_primes, (100,), (isprime,), ("math",))
 result = job1()
 
 print "Sum of primes below 100 is", result
-
+job2 = job_server.submit(sum_primes, (10,), (), ())
+print "It is job2",job2()
+print "check error information"
+#exit(0)
 start_time = time.time()
 
 # The following submits 8 jobs and then retrieves the results
